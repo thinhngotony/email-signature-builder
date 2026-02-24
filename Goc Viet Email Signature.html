@@ -543,8 +543,8 @@
                 <div class="form-group">
                     <label>Icon Style</label>
                     <select class="selector-select" id="iconStyle" onchange="updatePreview()">
-                        <option value="text">Text Labels (Gmail Compatible)</option>
-                        <option value="icons">PNG Icons (Browser Only)</option>
+                        <option value="text">Text Labels (Fallback)</option>
+                        <option value="icons" selected>PNG Icons (Gmail &amp; All Clients)</option>
                     </select>
                 </div>
             </div>
@@ -586,33 +586,35 @@
     let brandColor = '#c41c3b';
 
     const labelStyle = "color:#94a3b8;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;";
+    const iconCdn = "https://cdn.jsdelivr.net/gh/dmhendricks/signature-social-icons/icons/round-flat-filled/50px";
+    const iconStyle = 'width:18px;height:18px;vertical-align:middle;margin-right:6px;border-radius:50%;';
 
-    // Text labels - Gmail compatible, enterprise-style full word labels
+    // Text labels - Gmail compatible, enterprise-style full word labels (fallback)
     const textLabels = {
         email: `<span style="${labelStyle}">Email</span>`,
         phone: `<span style="${labelStyle}">Mobile</span>`,
         office: `<span style="${labelStyle}">Tel</span>`,
         globe: `<span style="${labelStyle}">Web</span>`,
         location: `<span style="${labelStyle}">Addr</span>`,
-        linkedin: `<span style="color:#0077b5;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">LinkedIn</span>`,
-        twitter: `<span style="color:#1a1a1a;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">X</span>`,
-        whatsapp: `<span style="color:#25D366;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">WhatsApp</span>`,
-        facebook: `<span style="color:#1877F2;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">Facebook</span>`,
-        youtube: `<span style="color:#FF0000;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">YouTube</span>`
+        linkedin: `<span style="${labelStyle}">LinkedIn</span>`,
+        twitter: `<span style="${labelStyle}">X</span>`,
+        whatsapp: `<span style="${labelStyle}">WhatsApp</span>`,
+        facebook: `<span style="${labelStyle}">Facebook</span>`,
+        youtube: `<span style="${labelStyle}">YouTube</span>`
     };
 
-    // PNG icons as base64 (better email compatibility than SVG)
+    // Hosted PNG icons via jsDelivr CDN - works in Gmail, Outlook, Apple Mail
     const pngIcons = {
-        email: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADPSURBVDiNpZMxDoJAEEXfLBZQSGFhYUdBZ+EFvIKtvYfwGJ7Cxht4AW9gYUdhQUJBQUFC8VuQZVlYTPzJJDvz5/9JZgZUVcUfwQWwABzH+Vmz1kogiiIsy2JfluUwCAJc1wXgcDjgOA7GmE8d6bkFXNftBVuW9dWRrusQx/EgA4iiCNu2e8FKKeI4xvf9QQ3ZJQgCbNumKAoA8jwnTdN+BgCe55EkCWVZAqCUIk1TsijqZ9BsNnO8Z3e7HWmaDjNoa2BZ1vevEELQ6/U+AXzMXHEMwmeuuAAAAABJRU5ErkJggg==" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        phone: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVDiNtZKxDcIwEEXfOQ6iQUqBWIAFGIBRGIFRGIURGCALMABSCqQuHFkKIXGCfNJJd/f/+76zYWZUIUkbB2wl3auElwNJ/4Ik1T41GWPsJK3L8CpZl+FeijuStkA7DAOAiGhpXAKniJgBXeBcHd8WANiHYbiRdCvqAy4AEfEEdCRd3b0tU0opbyU9e14DhxFw90tJL1X9DwFYAMsK/BaY5pwX47cJAN5VvEo+AR4i4n1UQ9L0HzPOD7LYSmWUIANQAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        office: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVDiNtZKxDcIwEEXfOQ6iQUqBWIAFGIBRGIFRGIURGCALMABSCqQuHFkKIXGCfNJJd/f/+76zYWZUIUkbB2wl3auElwNJ/4Ik1T41GWPsJK3L8CpZl+FeijuStkA7DAOAiGhpXAKniJgBXeBcHd8WANiHYbiRdCvqAy4AEfEEdCRd3b0tU0opbyU9e14DhxFw90tJL1X9DwFYAMsK/BaY5pwX47cJAN5VvEo+AR4i4n1UQ9L0HzPOD7LYSmWUIANQAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        globe: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADhSURBVDiNpZI9DoJAEIW/WdDGxMLKwpLCwt7Ga3gDb2PrHbyAJSfwBpZewMbCwkbYYiPrT7FkwQU08CaTzLx5+WZmB6y1/BMywBhD27Y/5TRNiaKI0+n0E6C1Jk1T3l/e+wVACHF1XoqL0Pc96/Wa0+n0dSEMQ9I0ZbVafRYwxiCE4HA4fBXYbDYEQcDhcPgqYK0lDEOyLPs4IKVkvV5jjKFpGpRSnM9ndrvdZwHX0/V6zXa7pW1b2rZlv9+z2Ww+C4RhiJTyo0BVVez3+88CYRgSBME3gePxyG63+xfg2wt/xBvs5E5LnXMRzQAAAABJRU5ErkJggg==" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        location: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC1SURBVDiNrdIxDoJAEAXQPwtYSEJBYWFBR+ENPIW9h/AYnsLGG3gBb2BhR2FBQkJBQUHxW5BlWVgL/cnk78yf2dkBM6MKSdo4YCvpXiW8HEj6FySp9qnJGGMnqSrDq2RVhnsq7kjaAu0wDACioqVxCZwiYgZ0gXN1fFsAYB+G4UbSragPuABExBPQkXR197ZMKY22pGfPa+AwAu5+KemNqv+HAMyBRQV+DczzzIvx2wQAbyteJR+d+zfVbTeTlwAAAABJRU5ErkJggg==" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        linkedin: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADESURBVDiNpdO9SgNBFAXgb3cTgoWFhYWthYWVjW/gK/gEvo2tb+AL+AK2PoGNhYWNEBsh2LgSjT8xWOwuJJtNcODADHfOuXeGYYyxiCQtHLCV9F4nPI6k/4Ik1T41WeijkzRp1K+TyUZ4VIo7kraA+2EYAMRBW+UWOI2IEdAFLhvi2wYA9mEYbiTdinqAK0BEPAFdSdfuPqtS6jqSXoJwDRxGwN0vJb0x93+mAKyAZQN+A6zjnBfjNwkA3pv4WvIJ8BgRH3MNSVO/XANPx8OFLz8AAAAASUVORK5CYII=" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        twitter: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACnSURBVDiNY2AYBaNgGABGRkZGJiYmJkZGRkYGCgEjIyMTExPT/////zMxMTH9JxcwMjIy/v///z8DA8P/////MzAwMPz//5+BgYHhPzMz838mJqb/5LjgPwMDw38GBob/jIyMjP///2dgYGD4D1LP8P8/AwMDAwszM/N/cg1gYGT8z8DA8J+BgYGBmZn5PwMDw39mZub/DAwM/5mZmf8zMjIyUuwFALnRNVIKOOlzAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        whatsapp: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADmSURBVDiNpZKxTsNADIZ/O7kgFiSWLiwsLCwMvAFPwROwsbLxBDwBCwtvwMLCwIIEQmJBQiG5IerQXJIm6klf5PP5t8+2YGZ8J2RpYzftJd2qhJcDSf8DSap9GjLGmEvqlOE10i3Dcynu0O4CnYdhABDxOIubwCkihkAXOFfHjw0A7E0YbiRdqg6wBIiIJ6Aj6crdx1WK7kh6CcM10GkEnN2vJL1S9z+mAKyBVQV+A8zjnBfjjwkA3pr4WvIO8BAR75MGkqb+uAbujoDduVvSC03/mwKwApYV+C0wHw9ejN8nAHhv4mvJJ7LJW0TN8IYXAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
-        facebook: `<span style="color:#1877F2;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">Facebook</span>`,
-        youtube: `<span style="color:#FF0000;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">YouTube</span>`
+        email: `<img src="${iconCdn}/mail.png" alt="Email" style="${iconStyle}">`,
+        phone: `<img src="${iconCdn}/call.png" alt="Mobile" style="${iconStyle}">`,
+        office: `<img src="${iconCdn}/call.png" alt="Tel" style="${iconStyle}">`,
+        globe: `<img src="${iconCdn}/www.png" alt="Web" style="${iconStyle}">`,
+        location: `<img src="${iconCdn}/www.png" alt="Addr" style="${iconStyle}">`,
+        linkedin: `<img src="${iconCdn}/linkedin.png" alt="LinkedIn" style="${iconStyle}">`,
+        twitter: `<img src="${iconCdn}/twitter.png" alt="X" style="${iconStyle}">`,
+        whatsapp: `<img src="${iconCdn}/whatsapp.png" alt="WhatsApp" style="${iconStyle}">`,
+        facebook: `<img src="${iconCdn}/facebook.png" alt="Facebook" style="${iconStyle}">`,
+        youtube: `<img src="${iconCdn}/youtube.png" alt="YouTube" style="${iconStyle}">`
     };
 
     function setHeaderColor(el) {
