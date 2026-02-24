@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Signature Builder - Professional</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --accent: #0f172a;
+            --accent-blue: #2563eb;
+            --input-bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .toggle-label {
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #cbd5e1;
+            border-radius: 22px;
+            transition: 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background: var(--accent-blue);
+        }
+
+        .toggle input:checked + .toggle-slider::before {
+            transform: translateX(18px);
+        }
+
+        /* Social Links */
+        .social-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .social-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-item input {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            padding: 4px;
+        }
+
+        .social-item input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Upload Button */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-blue);
+            background: rgba(37, 99, 235, 0.02);
+        }
+
+        .upload-area.has-image {
+            border-style: solid;
+            border-color: var(--accent-blue);
+        }
+
+        .upload-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Preview Area */
+        .preview-area {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+        }
+
+        .preview-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            padding: 32px;
+            max-width: 760px;
+            width: 100%;
+        }
+
+        .preview-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--input-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .copy-status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 500;
+            display: none;
+        }
+
+        /* Color Picker */
+        .color-picker-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-swatch:hover,
+        .color-swatch.active {
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <!-- Sidebar: Form Controls -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>Email Signature Builder</h1>
+            <p>Create professional signatures like Cisco, Google & more</p>
+        </div>
+
+        <!-- Personal Info -->
+        <div class="form-section">
+            <div class="form-section-title">Personal Information</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" value="Thinh Ngo" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label>Nickname (Optional)</label>
+                    <input type="text" id="nickname" value="Tony" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Job Title</label>
+                    <input type="text" id="jobTitle" value="Software Engineer" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" value="thinh.ngo@gocviet.com.vn" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label>Mobile</label>
+                    <input type="tel" id="mobile" value="+84 856 872 874" oninput="updatePreview()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Info -->
+        <div class="form-section">
+            <div class="form-section-title">Company Information</div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="companyName" value="Goc Viet TSI Co., Ltd" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Address (Single Line)</label>
+                    <input type="text" id="address" value="37 Ton Duc Thang St, District 1, Ho Chi Minh City, Vietnam" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Office Phone</label>
+                    <input type="tel" id="officePhone" value="+84 28 3995 7425" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" id="website" value="www.gocviet.com.vn" oninput="updatePreview()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="form-section">
+            <div class="form-section-title">Social Links</div>
+
+            <div class="social-item">
+                <div class="social-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </div>
+                <input type="text" id="linkedin" value="linkedin.com/in/thinh-ngo" placeholder="LinkedIn URL" oninput="updatePreview()">
+                <label class="toggle">
+                    <input type="checkbox" id="linkedinShow" checked onchange="updatePreview()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="social-item">
+                <div class="social-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#1DA1F2"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                </div>
+                <input type="text" id="twitter" value="" placeholder="Twitter/X handle" oninput="updatePreview()">
+                <label class="toggle">
+                    <input type="checkbox" id="twitterShow" onchange="updatePreview()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="social-item">
+                <div class="social-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </div>
+                <input type="text" id="whatsapp" value="+84856872874" placeholder="WhatsApp number" oninput="updatePreview()">
+                <label class="toggle">
+                    <input type="checkbox" id="whatsappShow" onchange="updatePreview()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="form-section">
+            <div class="form-section-title">Header Style</div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Header Text (leave empty to hide)</label>
+                    <input type="text" id="headerText" value="GOC VIET" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Tagline (shows in header)</label>
+                    <input type="text" id="tagline" value="World Popular Sauces & Agricultural Products" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Header Color</label>
+                    <div class="color-picker-row">
+                        <div class="color-swatch active" style="background: #0a1628;" data-color="#0a1628" onclick="setHeaderColor(this)"></div>
+                        <div class="color-swatch" style="background: #1e3a5f;" data-color="#1e3a5f" onclick="setHeaderColor(this)"></div>
+                        <div class="color-swatch" style="background: #1a1a1a;" data-color="#1a1a1a" onclick="setHeaderColor(this)"></div>
+                        <div class="color-swatch" style="background: #064e3b;" data-color="#064e3b" onclick="setHeaderColor(this)"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Brand Color</label>
+                    <div class="color-picker-row">
+                        <div class="color-swatch active" style="background: #c41c3b;" data-color="#c41c3b" onclick="setBrandColor(this)"></div>
+                        <div class="color-swatch" style="background: #2563eb;" data-color="#2563eb" onclick="setBrandColor(this)"></div>
+                        <div class="color-swatch" style="background: #059669;" data-color="#059669" onclick="setBrandColor(this)"></div>
+                        <div class="color-swatch" style="background: #7c3aed;" data-color="#7c3aed" onclick="setBrandColor(this)"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Logo (Light/White for dark header)</label>
+                    <div class="upload-area" id="logoUploadArea" onclick="document.getElementById('logoUpload').click()">
+                        <div class="upload-text" id="logoUploadText">Click to upload logo</div>
+                        <div class="upload-hint">PNG with transparent background recommended</div>
+                    </div>
+                    <input type="file" id="logoUpload" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
+                </div>
+            </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Icon Style</label>
+                    <select class="selector-select" id="iconStyle" onchange="updatePreview()">
+                        <option value="icons">PNG Icons (Recommended)</option>
+                        <option value="text">Unicode Symbols (Fallback)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="toggle-group">
+                <span class="toggle-label">Show Gradient Bar</span>
+                <label class="toggle">
+                    <input type="checkbox" id="showGradient" checked onchange="updatePreview()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="form-row full" style="margin-top:12px;">
+                <div class="form-group">
+                    <label>Bottom Tagline (leave empty to hide)</label>
+                    <input type="text" id="bottomTagline" value="Premium Vietnamese Sauces | Global Quality Standards | Est. 2010" placeholder="e.g. Quality Products | Since 2010" oninput="updatePreview()">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Preview Area -->
+    <div class="preview-area">
+        <div class="preview-container">
+            <div class="preview-label">Signature Preview</div>
+            <div id="signaturePreview"></div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="copySignature()">Copy to Clipboard</button>
+                <button class="btn btn-secondary" onclick="downloadHTML()">Download HTML</button>
+            </div>
+            <div class="copy-status" id="copyStatus">Copied! Paste in Gmail or Outlook signature settings.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let logoDataURL = null;
+    let headerColor = '#0a1628';
+    let brandColor = '#c41c3b';
+
+    // Text labels (most compatible) - using simple markers
+    const textLabels = {
+        email: `<span style="font-size:13px;margin-right:5px;vertical-align:middle;">&#9993;</span>`,
+        phone: `<span style="font-size:13px;margin-right:5px;vertical-align:middle;">&#9742;</span>`,
+        office: `<span style="font-size:13px;margin-right:5px;vertical-align:middle;">&#9742;</span>`,
+        globe: `<span style="font-size:13px;margin-right:5px;vertical-align:middle;">&#9673;</span>`,
+        location: `<span style="font-size:13px;margin-right:5px;vertical-align:middle;">&#9670;</span>`,
+        linkedin: `<span style="color:#0077b5;font-size:12px;font-weight:700;margin-right:4px;">in</span>`,
+        twitter: `<span style="color:#1a1a1a;font-size:12px;font-weight:700;margin-right:4px;">X</span>`,
+        whatsapp: `<span style="color:#25D366;font-size:12px;font-weight:700;margin-right:4px;">W</span>`
+    };
+
+    // PNG icons as base64 (better email compatibility than SVG)
+    const pngIcons = {
+        email: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADPSURBVDiNpZMxDoJAEEXfLBZQSGFhYUdBZ+EFvIKtvYfwGJ7Cxht4AW9gYUdhQUJBQUFC8VuQZVlYTPzJJDvz5/9JZgZUVcUfwQWwABzH+Vmz1kogiiIsy2JfluUwCAJc1wXgcDjgOA7GmE8d6bkFXNftBVuW9dWRrusQx/EgA4iiCNu2e8FKKeI4xvf9QQ3ZJQgCbNumKAoA8jwnTdN+BgCe55EkCWVZAqCUIk1TsijqZ9BsNnO8Z3e7HWmaDjNoa2BZ1vevEELQ6/U+AXzMXHEMwmeuuAAAAABJRU5ErkJggg==" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        phone: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVDiNtZKxDcIwEEXfOQ6iQUqBWIAFGIBRGIFRGIURGCALMABSCqQuHFkKIXGCfNJJd/f/+76zYWZUIUkbB2wl3auElwNJ/4Ik1T41GWPsJK3L8CpZl+FeijuStkA7DAOAiGhpXAKniJgBXeBcHd8WANiHYbiRdCvqAy4AEfEEdCRd3b0tU0opbyU9e14DhxFw90tJL1X9DwFYAMsK/BaY5pwX47cJAN5VvEo+AR4i4n1UQ9L0HzPOD7LYSmWUIANQAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        office: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVDiNtZKxDcIwEEXfOQ6iQUqBWIAFGIBRGIFRGIURGCALMABSCqQuHFkKIXGCfNJJd/f/+76zYWZUIUkbB2wl3auElwNJ/4Ik1T41GWPsJK3L8CpZl+FeijuStkA7DAOAiGhpXAKniJgBXeBcHd8WANiHYbiRdCvqAy4AEfEEdCRd3b0tU0opbyU9e14DhxFw90tJL1X9DwFYAMsK/BaY5pwX47cJAN5VvEo+AR4i4n1UQ9L0HzPOD7LYSmWUIANQAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        globe: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADhSURBVDiNpZI9DoJAEIW/WdDGxMLKwpLCwt7Ga3gDb2PrHbyAJSfwBpZewMbCwkbYYiPrT7FkwQU08CaTzLx5+WZmB6y1/BMywBhD27Y/5TRNiaKI0+n0E6C1Jk1T3l/e+wVACHF1XoqL0Pc96/Wa0+n0dSEMQ9I0ZbVafRYwxiCE4HA4fBXYbDYEQcDhcPgqYK0lDEOyLPs4IKVkvV5jjKFpGpRSnM9ndrvdZwHX0/V6zXa7pW1b2rZlv9+z2Ww+C4RhiJTyo0BVVez3+88CYRgSBME3gePxyG63+xfg2wt/xBvs5E5LnXMRzQAAAABJRU5ErkJggg==" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        location: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC1SURBVDiNrdIxDoJAEAXQPwtYSEJBYWFBR+ENPIW9h/AYnsLGG3gBb2BhR2FBQkJBQUHxW5BlWVgL/cnk78yf2dkBM6MKSdo4YCvpXiW8HEj6FySp9qnJGGMnqSrDq2RVhnsq7kjaAu0wDACioqVxCZwiYgZ0gXN1fFsAYB+G4UbSragPuABExBPQkXR197ZMKY22pGfPa+AwAu5+KemNqv+HAMyBRQV+DczzzIvx2wQAbyteJR+d+zfVbTeTlwAAAABJRU5ErkJggg==" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        linkedin: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADESURBVDiNpdO9SgNBFAXgb3cTgoWFhYWthYWVjW/gK/gEvo2tb+AL+AK2PoGNhYWNEBsh2LgSjT8xWOwuJJtNcODADHfOuXeGYYyxiCQtHLCV9F4nPI6k/4Ik1T41WeijkzRp1K+TyUZ4VIo7kraA+2EYAMRBW+UWOI2IEdAFLhvi2wYA9mEYbiTdinqAK0BEPAFdSdfuPqtS6jqSXoJwDRxGwN0vJb0x93+mAKyAZQN+A6zjnBfjNwkA3pv4WvIJ8BgRH3MNSVO/XANPx8OFLz8AAAAASUVORK5CYII=" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        twitter: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACnSURBVDiNY2AYBaNgGABGRkZGJiYmJkZGRkYGCgEjIyMTExPT/////zMxMTH9JxcwMjIy/v///z8DA8P/////MzAwMPz//5+BgYHhPzMz838mJqb/5LjgPwMDw38GBob/jIyMjP///2dgYGD4D1LP8P8/AwMDAwszM/N/cg1gYGT8z8DA8J+BgYGBmZn5PwMDw39mZub/DAwM/5mZmf8zMjIyUuwFALnRNVIKOOlzAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`,
+        whatsapp: `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADmSURBVDiNpZKxTsNADIZ/O7kgFiSWLiwsLCwMvAFPwROwsbLxBDwBCwtvwMLCwIIEQmJBQiG5IerQXJIm6klf5PP5t8+2YGZ8J2RpYzftJd2qhJcDSf8DSap9GjLGmEvqlOE10i3Dcynu0O4CnYdhABDxOIubwCkihkAXOFfHjw0A7E0YbiRdqg6wBIiIJ6Aj6crdx1WK7kh6CcM10GkEnN2vJL1S9z+mAKyBVQV+A8zjnBfjjwkA3pr4WvIO8BAR75MGkqb+uAbujoDduVvSC03/mwKwApYV+C0wHw9ejN8nAHhv4mvJJ7LJW0TN8IYXAAAAAElFTkSuQmCC" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">`
+    };
+
+    function setHeaderColor(el) {
+        el.parentElement.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+        headerColor = el.dataset.color;
+        updatePreview();
+    }
+
+    function setBrandColor(el) {
+        el.parentElement.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+        brandColor = el.dataset.color;
+        updatePreview();
+    }
+
+    function handleLogoUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            logoDataURL = e.target.result;
+            document.getElementById('logoUploadText').textContent = file.name;
+            document.getElementById('logoUploadArea').classList.add('has-image');
+            updatePreview();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function generateSignature() {
+        const data = {
+            fullName: document.getElementById('fullName').value,
+            nickname: document.getElementById('nickname').value,
+            jobTitle: document.getElementById('jobTitle').value,
+            email: document.getElementById('email').value,
+            mobile: document.getElementById('mobile').value,
+            companyName: document.getElementById('companyName').value,
+            address: document.getElementById('address').value,
+            officePhone: document.getElementById('officePhone').value,
+            website: document.getElementById('website').value,
+            tagline: document.getElementById('tagline').value,
+            linkedin: document.getElementById('linkedin').value,
+            linkedinShow: document.getElementById('linkedinShow').checked,
+            twitter: document.getElementById('twitter').value,
+            twitterShow: document.getElementById('twitterShow').checked,
+            whatsapp: document.getElementById('whatsapp').value,
+            whatsappShow: document.getElementById('whatsappShow').checked,
+            showGradient: document.getElementById('showGradient').checked,
+            headerText: document.getElementById('headerText').value,
+            iconStyle: document.getElementById('iconStyle').value,
+            bottomTagline: document.getElementById('bottomTagline').value
+        };
+
+        // Select icon set based on user preference
+        const icons = data.iconStyle === 'icons' ? pngIcons : textLabels;
+
+        // Logo section - supports: logo only, text only, logo + text, or empty
+        let logoSection = '';
+
+        if (logoDataURL && data.headerText) {
+            // Logo + Text + Tagline
+            logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
+                <td style="padding-right:16px;vertical-align:middle;">
+                  <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
+                </td>
+                <td style="vertical-align:middle;">
+                  <div style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:1px;">${data.headerText}</div>
+                  ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">${data.tagline}</div>` : ''}
+                </td>
+              </tr></table>`;
+        } else if (logoDataURL) {
+            // Logo only + Tagline
+            logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
+                <td style="padding-right:16px;vertical-align:middle;">
+                  <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
+                </td>
+                <td style="vertical-align:middle;">
+                  ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);">${data.tagline}</div>` : ''}
+                </td>
+              </tr></table>`;
+        } else if (data.headerText) {
+            // Text only (with letter icon) + Tagline
+            logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
+                <td style="padding-right:14px;vertical-align:middle;">
+                  <div style="width:44px;height:44px;border:2px solid rgba(255,255,255,0.3);border-radius:8px;text-align:center;line-height:40px;">
+                    <span style="font-size:22px;font-weight:800;color:#ffffff;">${data.headerText.charAt(0)}</span>
+                  </div>
+                </td>
+                <td style="vertical-align:middle;">
+                  <div style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:1px;">${data.headerText}</div>
+                  ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">${data.tagline}</div>` : ''}
+                </td>
+              </tr></table>`;
+        } else {
+            // Empty - minimal header
+            logoSection = '';
+        }
+
+        // Social links
+        let socialLinks = '';
+        if (data.linkedinShow && data.linkedin) {
+            socialLinks += `<tr><td style="padding:3px 0;">${icons.linkedin}<a href="https://${data.linkedin.replace('https://','')}" target="_blank" style="font-size:13px;color:#2563eb;text-decoration:none;">LinkedIn</a></td></tr>`;
+        }
+        if (data.twitterShow && data.twitter) {
+            socialLinks += `<tr><td style="padding:3px 0;">${icons.twitter}<a href="https://x.com/${data.twitter.replace('@','')}" target="_blank" style="font-size:13px;color:#2563eb;text-decoration:none;">@${data.twitter.replace('@','')}</a></td></tr>`;
+        }
+        if (data.whatsappShow && data.whatsapp) {
+            socialLinks += `<tr><td style="padding:3px 0;">${icons.whatsapp}<a href="https://wa.me/${data.whatsapp.replace(/[\s+\-]/g,'')}" target="_blank" style="font-size:13px;color:#2563eb;text-decoration:none;">WhatsApp</a></td></tr>`;
+        }
+
+        // Gradient bar
+        const gradientBar = data.showGradient
+            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="height:3px;background:linear-gradient(90deg,#0066cc 0%,#6366f1 25%,#a855f7 50%,#ec4899 75%,#f97316 100%);"></td></tr></table>`
+            : '';
+
+        return `<table cellpadding="0" cellspacing="0" border="0" style="font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:680px;width:100%;">
+  <tr><td style="padding:0;">
+
+    <!-- Header -->
+    ${logoSection ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${headerColor};">
+      <tr><td style="padding:16px 24px;">${logoSection}</td></tr>
+    </table>` : ''}
+
+    <!-- Gradient Bar -->
+    ${gradientBar}
+
+    <!-- Content -->
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;">
+      <tr><td style="padding:20px 24px;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+          <tr>
+            <!-- Left: Personal -->
+            <td style="vertical-align:top;width:42%;padding-right:24px;">
+              <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px;">${data.fullName}</div>
+              <div style="font-size:13px;color:${brandColor};font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">${data.nickname ? `(${data.nickname}) ` : ''}${data.jobTitle}</div>
+              <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Contact</div>
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr><td style="padding:3px 0;">${icons.email}<a href="mailto:${data.email}" style="font-size:13px;color:#2563eb;text-decoration:none;">${data.email}</a></td></tr>
+                <tr><td style="padding:3px 0;">${icons.phone}<span style="font-size:13px;color:#334155;">${data.mobile}</span></td></tr>
+                ${socialLinks}
+              </table>
+            </td>
+
+            <!-- Divider -->
+            <td style="width:1px;background:#e2e8f0;font-size:0;line-height:0;" width="1">&nbsp;</td>
+
+            <!-- Right: Office -->
+            <td style="vertical-align:top;width:58%;padding-left:24px;">
+              <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Office</div>
+              <div style="font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:4px;">${data.companyName}</div>
+              <div style="font-size:13px;color:#475569;line-height:1.5;margin-bottom:12px;">${data.address}</div>
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr><td style="padding:3px 0;">${icons.office}<a href="tel:${data.officePhone.replace(/\s/g,'')}" style="font-size:13px;color:#334155;text-decoration:none;">${data.officePhone}</a></td></tr>
+                <tr><td style="padding:3px 0;">${icons.globe}<a href="https://${data.website.replace('https://','')}" target="_blank" style="font-size:13px;color:#2563eb;text-decoration:none;">${data.website}</a></td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+
+    <!-- Bottom Tagline -->
+    ${data.bottomTagline ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f8fafc;border-top:1px solid #e2e8f0;">
+      <tr><td style="padding:10px 24px;text-align:center;">
+        <span style="font-size:11px;color:#94a3b8;letter-spacing:0.3px;">${data.bottomTagline}</span>
+      </td></tr>
+    </table>` : ''}
+
+  </td></tr>
+</table>`;
+    }
+
+    function updatePreview() {
+        document.getElementById('signaturePreview').innerHTML = generateSignature();
+    }
+
+    function copySignature() {
+        const html = generateSignature();
+
+        // Method 1: Use execCommand with selection (most reliable for email clients)
+        const container = document.getElementById('signaturePreview');
+        const range = document.createRange();
+        range.selectNodeContents(container);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        try {
+            document.execCommand('copy');
+            selection.removeAllRanges();
+            const status = document.getElementById('copyStatus');
+            status.style.display = 'block';
+            setTimeout(() => status.style.display = 'none', 3000);
+        } catch (err) {
+            // Fallback: Copy HTML only (not plain text)
+            const blob = new Blob([html], { type: 'text/html' });
+            navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]).then(() => {
+                const status = document.getElementById('copyStatus');
+                status.style.display = 'block';
+                setTimeout(() => status.style.display = 'none', 3000);
+            }).catch(() => {
+                alert('Copy failed. Please select the signature manually and copy.');
+            });
+        }
+    }
+
+    function downloadHTML() {
+        const sig = generateSignature();
+        const full = `<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><title>Email Signature</title></head>\n<body style="margin:20px;background:#f5f5f5;">\n${sig}\n</body>\n</html>`;
+        const blob = new Blob([full], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'email-signature.html';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Initialize
+    updatePreview();
+</script>
+
+</body>
+</html>
