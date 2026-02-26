@@ -371,6 +371,19 @@
             <p>Create professional signatures like Cisco, Google & more</p>
         </div>
 
+        <!-- Company Switcher -->
+        <div class="form-section">
+            <div class="form-section-title">Company</div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <select class="selector-select" id="companySwitcher" onchange="switchCompany()" style="font-weight:600;">
+                        <option value="gocviet" selected>GOC VIET TSI CO., LTD</option>
+                        <option value="goodday">EPK GOOD DAY CO.,</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <!-- Personal Info -->
         <div class="form-section">
             <div class="form-section-title">Personal Information</div>
@@ -424,7 +437,7 @@
                 </div>
                 <div class="form-group">
                     <label>Website</label>
-                    <input type="url" id="website" value="www.gocviet.com.vn" oninput="updatePreview()">
+                    <input type="url" id="website" value="gocviet.com.vn" oninput="updatePreview()">
                 </div>
             </div>
         </div>
@@ -648,6 +661,35 @@
         zalo: `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/50px-Icon_of_Zalo.svg.png" alt="Zalo" style="${iconStyle}">`
     };
 
+    // Company presets
+    const companyPresets = {
+        gocviet: {
+            headerText: 'GOC VIET TSI CO., LTD',
+            email: 'phuong.phan@gocviet.com.vn',
+            companyName: 'Goc Viet Office',
+            website: 'gocviet.com.vn',
+            bottomTagline: 'Premium Vietnamese Sauces | Global Quality Standards | Est. 2010'
+        },
+        goodday: {
+            headerText: 'EPK GOOD DAY CO.,',
+            email: 'alice.phan@goodday.biz',
+            companyName: 'Good Day Office',
+            website: 'goodday.biz',
+            bottomTagline: 'Strategic Consulting | Global Trading | Premium Food Export'
+        }
+    };
+
+    function switchCompany() {
+        const preset = companyPresets[document.getElementById('companySwitcher').value];
+        if (!preset) return;
+        document.getElementById('headerText').value = preset.headerText;
+        document.getElementById('email').value = preset.email;
+        document.getElementById('companyName').value = preset.companyName;
+        document.getElementById('website').value = preset.website;
+        document.getElementById('bottomTagline').value = preset.bottomTagline;
+        updatePreview();
+    }
+
     // C1 Fix: XSS sanitization for all user inputs
     function esc(str) {
         const d = document.createElement('div');
@@ -678,7 +720,7 @@
 
     // M3 Fix: Normalize URL - strip any protocol prefix
     function cleanUrl(url) {
-        return url.replace(/^https?:\/\//, '').replace(/^www\./, 'www.');
+        return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
     }
 
     function formatPhone(num) {
@@ -867,7 +909,7 @@
               <div style="font-size:11px;color:#475569;line-height:1.4;margin-bottom:10px;">${data.address}</div>
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr><td style="padding:2px 0;">${icons.office}<a href="tel:${cleanTel(raw.officePhone)}" style="font-size:12px;color:#334155;text-decoration:none;">${esc(formatPhone(raw.officePhone))}</a></td></tr>
-                <tr><td style="padding:2px 0;">${icons.globe}<a href="https://${esc(websiteClean)}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(raw.website)}</a></td></tr>
+                <tr><td style="padding:2px 0;">${icons.globe}<a href="https://${esc(websiteClean)}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(raw.website.replace(/^https?:\/\//,'').replace(/^www\./,''))}</a></td></tr>
                 ${data.facebookShow && data.facebook ? `<tr><td style="padding:2px 0;">${icons.facebook}<a href="https://${esc(cleanUrl(raw.facebook))}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(cleanUrl(raw.facebook).replace('www.facebook.com/','').replace('facebook.com/',''))}</a></td></tr>` : ''}
                 ${data.youtubeShow && data.youtube ? `<tr><td style="padding:2px 0;">${icons.youtube}<a href="https://${esc(cleanUrl(raw.youtube))}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(cleanUrl(raw.youtube).replace('www.youtube.com/','').replace('youtube.com/',''))}</a></td></tr>` : ''}
               </table>
