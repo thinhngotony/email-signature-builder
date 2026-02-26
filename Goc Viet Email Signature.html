@@ -539,8 +539,8 @@
                 <div class="form-group">
                     <label>Brand Color</label>
                     <div class="color-picker-row">
-                        <div class="color-swatch active" style="background: #c41c3b;" data-color="#c41c3b" onclick="setBrandColor(this)"></div>
-                        <div class="color-swatch" style="background: #2563eb;" data-color="#2563eb" onclick="setBrandColor(this)"></div>
+                        <div class="color-swatch" style="background: #c41c3b;" data-color="#c41c3b" onclick="setBrandColor(this)"></div>
+                        <div class="color-swatch active" style="background: #2563eb;" data-color="#2563eb" onclick="setBrandColor(this)"></div>
                         <div class="color-swatch" style="background: #059669;" data-color="#059669" onclick="setBrandColor(this)"></div>
                         <div class="color-swatch" style="background: #7c3aed;" data-color="#7c3aed" onclick="setBrandColor(this)"></div>
                     </div>
@@ -572,6 +572,18 @@
                     <span class="toggle-slider"></span>
                 </label>
             </div>
+            <div class="form-row full" style="margin-top:8px;">
+                <div class="form-group">
+                    <label>Gradient Style</label>
+                    <select class="selector-select" id="gradientStyle" onchange="updatePreview()">
+                        <option value="vibrant" selected>Vibrant Modern (Blue → Indigo → Purple)</option>
+                        <option value="rainbow">Rainbow (Blue → Purple → Pink → Orange)</option>
+                        <option value="glow">Luminous Glow (Blue → Light Blue → Blue)</option>
+                        <option value="bold">Bold Confident (Deep Blue → Blue → Indigo)</option>
+                        <option value="luxury">Luxury (Blue → Royal → Violet)</option>
+                    </select>
+                </div>
+            </div>
             <div class="form-row full" style="margin-top:12px;">
                 <div class="form-group">
                     <label>Bottom Tagline (leave empty to hide)</label>
@@ -600,7 +612,7 @@
 <script>
     let logoDataURL = null;
     let headerColor = '#1B3A6B';
-    let brandColor = '#c41c3b';
+    let brandColor = '#2563eb';
 
     const labelStyle = "color:#94a3b8;font-size:11px;font-weight:600;font-family:'Segoe UI',Roboto,Arial,sans-serif;margin-right:5px;";
     const iconCdn = "https://cdn.jsdelivr.net/gh/dmhendricks/signature-social-icons/icons/round-flat-filled/50px";
@@ -725,6 +737,7 @@
             zalo: document.getElementById('zalo').value,
             zaloShow: document.getElementById('zaloShow').checked,
             showGradient: document.getElementById('showGradient').checked,
+            gradientStyle: document.getElementById('gradientStyle').value,
             headerText: document.getElementById('headerText').value,
             slogan: document.getElementById('slogan').value,
             iconStyle: document.getElementById('iconStyle').value,
@@ -800,9 +813,17 @@
             socialLinks += `<tr><td style="padding:2px 0;">${icons.zalo}<a href="https://zalo.me/${cleanTel(raw.zalo).replace('+','')}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(formatPhone(raw.zalo))}</a></td></tr>`;
         }
 
-        // Gradient bar — C2 Fix: use headerColor variables
+        // Gradient bar with style options
+        const gradientStyles = {
+            vibrant:  { css: 'linear-gradient(90deg,#3B82F6 0%,#6366F1 50%,#A855F7 100%)', fallback: '#6366F1' },
+            rainbow:  { css: 'linear-gradient(90deg,#0066cc 0%,#6366f1 25%,#a855f7 50%,#ec4899 75%,#f97316 100%)', fallback: '#6366f1' },
+            glow:     { css: 'linear-gradient(90deg,#2E5DFF 0%,#4B9EFF 50%,#2E5DFF 100%)', fallback: '#4B9EFF' },
+            bold:     { css: 'linear-gradient(90deg,#1E40AF 0%,#2563EB 50%,#4F46E5 100%)', fallback: '#2563EB' },
+            luxury:   { css: 'linear-gradient(90deg,#3F83F8 0%,#2E5DFF 50%,#5E46BF 100%)', fallback: '#2E5DFF' }
+        };
+        const gStyle = gradientStyles[data.gradientStyle] || gradientStyles.vibrant;
         const gradientBar = data.showGradient
-            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td bgcolor="${headerLight}" style="height:3px;background:linear-gradient(90deg,${headerColor} 0%,${headerLight} 50%,${headerColor} 100%);background-color:${headerLight};font-size:1px;line-height:1px;">&nbsp;</td></tr></table>`
+            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td bgcolor="${gStyle.fallback}" style="height:3px;background:${gStyle.css};background-color:${gStyle.fallback};font-size:1px;line-height:1px;">&nbsp;</td></tr></table>`
             : '';
 
         // M1 Fix: Use width="660" attribute for Outlook instead of just max-width
@@ -828,7 +849,7 @@
             <td style="vertical-align:top;width:46%;padding-right:14px;">
               <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Contact</div>
               <div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:1px;">${data.fullName}${data.nickname ? ` <span style="font-weight:400;color:#64748b;">(${data.nickname})</span>` : ''}</div>
-              <div style="font-size:11px;color:${brandColor};font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:10px;">${data.jobTitle}</div>
+              <div style="font-size:11px;color:#c41c3b;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:10px;">${data.jobTitle}</div>
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr><td style="padding:2px 0;">${icons.email}<a href="mailto:${data.email}" style="font-size:12px;color:${linkColor};text-decoration:none;">${data.email}</a></td></tr>
                 <tr><td style="padding:2px 0;">${icons.phone}<a href="tel:${cleanTel(raw.mobile)}" style="font-size:12px;color:#334155;text-decoration:none;">${esc(formatPhone(raw.mobile))}</a></td></tr>
