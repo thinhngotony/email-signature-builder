@@ -407,8 +407,8 @@
             <div class="form-section-title">Company Information</div>
             <div class="form-row full">
                 <div class="form-group">
-                    <label>Company Name</label>
-                    <input type="text" id="companyName" value="GOC VIET TSI CO., LTD" oninput="updatePreview()">
+                    <label>Company</label>
+                    <input type="text" id="companyName" value="Goc Viet Office" oninput="updatePreview()">
                 </div>
             </div>
             <div class="form-row full">
@@ -511,7 +511,7 @@
             <div class="form-row full">
                 <div class="form-group">
                     <label>Header Text (leave empty to hide)</label>
-                    <input type="text" id="headerText" value="GOC VIET" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
+                    <input type="text" id="headerText" value="GOC VIET TSI CO., LTD" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
                 </div>
             </div>
             <div class="form-row full">
@@ -851,8 +851,8 @@
               <div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:1px;">${data.fullName}${data.nickname ? ` <span style="font-weight:400;color:#64748b;">(${data.nickname})</span>` : ''}</div>
               <div style="font-size:11px;color:#c41c3b;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:10px;">${data.jobTitle}</div>
               <table cellpadding="0" cellspacing="0" border="0">
-                <tr><td style="padding:2px 0;">${icons.email}<a href="mailto:${data.email}" style="font-size:12px;color:${linkColor};text-decoration:none;">${data.email}</a></td></tr>
                 <tr><td style="padding:2px 0;">${icons.phone}<a href="tel:${cleanTel(raw.mobile)}" style="font-size:12px;color:#334155;text-decoration:none;">${esc(formatPhone(raw.mobile))}</a></td></tr>
+                <tr><td style="padding:2px 0;">${icons.email}<a href="mailto:${data.email}" style="font-size:12px;color:${linkColor};text-decoration:none;">${data.email}</a></td></tr>
                 ${socialLinks}
               </table>
             </td>
