@@ -511,7 +511,7 @@
             <div class="form-row full">
                 <div class="form-group">
                     <label>Header Text (leave empty to hide)</label>
-                    <input type="text" id="headerText" value="Goc Viet" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
+                    <input type="text" id="headerText" value="GOC VIET" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
                 </div>
             </div>
             <div class="form-row full">
@@ -718,9 +718,9 @@
                   <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
                 </td>
                 <td style="vertical-align:middle;">
-                  <div style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:1px;">${data.headerText}</div>
-                  ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">${data.tagline}</div>` : ''}
-                  ${data.slogan ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;font-style:italic;">${data.slogan}</div>` : ''}
+                  <div style="font-size:20px;font-weight:700;color:#F2F2F2;letter-spacing:2px;">${data.headerText}</div>
+                  ${data.tagline ? `<div style="font-size:12px;color:rgba(255,255,255,0.9);margin-top:4px;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
+                  ${data.slogan ? `<div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:6px;font-style:italic;letter-spacing:0.5px;">— ${data.slogan}</div>` : ''}
                 </td>
               </tr></table>`;
         } else if (logoDataURL) {
@@ -730,16 +730,16 @@
                   <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
                 </td>
                 <td style="vertical-align:middle;">
-                  ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);">${data.tagline}</div>` : ''}
+                  ${data.tagline ? `<div style="font-size:12px;color:rgba(255,255,255,0.9);letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
                 </td>
               </tr></table>`;
         } else if (data.headerText) {
             // Text only + Tagline + Slogan
             logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
                 <td style="vertical-align:middle;">
-                  <div style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:1px;">${data.headerText}</div>
-                  ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">${data.tagline}</div>` : ''}
-                  ${data.slogan ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;font-style:italic;">${data.slogan}</div>` : ''}
+                  <div style="font-size:20px;font-weight:700;color:#F2F2F2;letter-spacing:2px;">${data.headerText}</div>
+                  ${data.tagline ? `<div style="font-size:12px;color:rgba(255,255,255,0.9);margin-top:4px;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
+                  ${data.slogan ? `<div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:6px;font-style:italic;letter-spacing:0.5px;">— ${data.slogan}</div>` : ''}
                 </td>
               </tr></table>`;
         } else {
