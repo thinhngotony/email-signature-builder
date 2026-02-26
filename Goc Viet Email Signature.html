@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Signature Builder - Professional</title>
+    <title>Goc Viet Email Signature Builder</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -160,7 +160,7 @@
         .toggle-slider {
             position: absolute;
             cursor: pointer;
-            inset: 0;
+            top: 0; right: 0; bottom: 0; left: 0;
             background: #cbd5e1;
             border-radius: 22px;
             transition: 0.2s;
@@ -602,7 +602,7 @@
     let headerColor = '#1B3A6B';
     let brandColor = '#c41c3b';
 
-    const labelStyle = "color:#94a3b8;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;";
+    const labelStyle = "color:#94a3b8;font-size:11px;font-weight:600;font-family:'Segoe UI',Roboto,Arial,sans-serif;margin-right:5px;";
     const iconCdn = "https://cdn.jsdelivr.net/gh/dmhendricks/signature-social-icons/icons/round-flat-filled/50px";
     const iconStyle = 'width:16px;height:16px;vertical-align:middle;margin-right:5px;border-radius:50%;';
 
@@ -618,7 +618,7 @@
         whatsapp: `<span style="${labelStyle}">WhatsApp</span>`,
         facebook: `<span style="${labelStyle}">Facebook</span>`,
         youtube: `<span style="${labelStyle}">YouTube</span>`,
-        zalo: `<span style="color:#0068FF;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;">Zalo</span>`
+        zalo: `<span style="color:#0068FF;font-size:11px;font-weight:600;font-family:'Segoe UI',Roboto,Arial,sans-serif;margin-right:5px;">Zalo</span>`
     };
 
     // Hosted PNG icons via jsDelivr CDN - works in Gmail, Outlook, Apple Mail
@@ -636,11 +636,37 @@
         zalo: `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/50px-Icon_of_Zalo.svg.png" alt="Zalo" style="${iconStyle}">`
     };
 
+    // C1 Fix: XSS sanitization for all user inputs
+    function esc(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // C2 Fix: Compute lighter variant of header color for gradient
+    function lightenColor(hex, amount) {
+        hex = hex.replace('#', '');
+        const r = Math.min(255, parseInt(hex.substring(0, 2), 16) + amount);
+        const g = Math.min(255, parseInt(hex.substring(2, 4), 16) + amount);
+        const b = Math.min(255, parseInt(hex.substring(4, 6), 16) + amount);
+        return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+    }
+
     function setHeaderColor(el) {
         el.parentElement.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
         el.classList.add('active');
         headerColor = el.dataset.color;
         updatePreview();
+    }
+
+    // M2 Fix: Strip all non-digit/non-plus chars for tel: URIs (RFC 3966)
+    function cleanTel(num) {
+        return num.replace(/[^\d+]/g, '');
+    }
+
+    // M3 Fix: Normalize URL - strip any protocol prefix
+    function cleanUrl(url) {
+        return url.replace(/^https?:\/\//, '').replace(/^www\./, 'www.');
     }
 
     function formatPhone(num) {
@@ -675,7 +701,7 @@
     }
 
     function generateSignature() {
-        const data = {
+        const raw = {
             fullName: document.getElementById('fullName').value,
             nickname: document.getElementById('nickname').value,
             jobTitle: document.getElementById('jobTitle').value,
@@ -705,93 +731,107 @@
             bottomTagline: document.getElementById('bottomTagline').value
         };
 
+        // C1 Fix: Sanitize all text inputs
+        const data = {};
+        for (const [k, v] of Object.entries(raw)) {
+            data[k] = typeof v === 'string' ? esc(v) : v;
+        }
+
         // Select icon set based on user preference
         const icons = data.iconStyle === 'icons' ? pngIcons : textLabels;
 
+        // C2 Fix: Use headerColor variable + computed lighter variant for gradient
+        const headerLight = lightenColor(headerColor, 80);
+
+        // M5 Fix: Use brandColor for link colors
+        const linkColor = brandColor;
+
         // Logo section - supports: logo only, text only, logo + text, or empty
+        // C3 Fix: Use solid hex colors instead of rgba() for Outlook compatibility
         let logoSection = '';
 
         if (logoDataURL && data.headerText) {
-            // Logo + Text + Tagline + Slogan
             logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
                 <td style="padding-right:16px;vertical-align:middle;">
                   <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
                 </td>
                 <td style="vertical-align:middle;">
                   <div style="font-size:20px;font-weight:700;color:#F2F2F2;letter-spacing:2px;">${data.headerText}</div>
-                  ${data.tagline ? `<div style="font-size:12px;color:rgba(255,255,255,0.9);margin-top:4px;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
-                  ${data.slogan ? `<div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:6px;font-style:italic;letter-spacing:0.5px;">— ${data.slogan}</div>` : ''}
+                  ${data.tagline ? `<div style="font-size:12px;color:#E6E6E6;margin-top:4px;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
+                  ${data.slogan ? `<div style="font-size:10px;color:#B3B3B3;margin-top:6px;font-style:italic;letter-spacing:0.5px;">&mdash; ${data.slogan}</div>` : ''}
                 </td>
               </tr></table>`;
         } else if (logoDataURL) {
-            // Logo only + Tagline
             logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
                 <td style="padding-right:16px;vertical-align:middle;">
                   <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
                 </td>
                 <td style="vertical-align:middle;">
-                  ${data.tagline ? `<div style="font-size:12px;color:rgba(255,255,255,0.9);letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
+                  ${data.tagline ? `<div style="font-size:12px;color:#E6E6E6;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
                 </td>
               </tr></table>`;
         } else if (data.headerText) {
-            // Text only + Tagline + Slogan
             logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
                 <td style="vertical-align:middle;">
                   <div style="font-size:20px;font-weight:700;color:#F2F2F2;letter-spacing:2px;">${data.headerText}</div>
-                  ${data.tagline ? `<div style="font-size:12px;color:rgba(255,255,255,0.9);margin-top:4px;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
-                  ${data.slogan ? `<div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:6px;font-style:italic;letter-spacing:0.5px;">— ${data.slogan}</div>` : ''}
+                  ${data.tagline ? `<div style="font-size:12px;color:#E6E6E6;margin-top:4px;letter-spacing:0.3px;line-height:1.4;">${data.tagline}</div>` : ''}
+                  ${data.slogan ? `<div style="font-size:10px;color:#B3B3B3;margin-top:6px;font-style:italic;letter-spacing:0.5px;">&mdash; ${data.slogan}</div>` : ''}
                 </td>
               </tr></table>`;
         } else {
-            // Empty - minimal header
             logoSection = '';
         }
 
-        // Social links
+        // Social links — M5 Fix: use brandColor for link colors
         let socialLinks = '';
         if (data.linkedinShow && data.linkedin) {
-            const linkedinDisplay = data.linkedin.replace('https://','').replace('linkedin.com/in/','');
-            socialLinks += `<tr><td style="padding:2px 0;">${icons.linkedin}<a href="https://${data.linkedin.replace('https://','')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">${linkedinDisplay}</a></td></tr>`;
+            const linkedinClean = cleanUrl(raw.linkedin);
+            const linkedinDisplay = esc(linkedinClean.replace('linkedin.com/in/','').replace('linkedin.com/company/',''));
+            socialLinks += `<tr><td style="padding:2px 0;">${icons.linkedin}<a href="https://${esc(linkedinClean)}" style="font-size:12px;color:${linkColor};text-decoration:none;">${linkedinDisplay}</a></td></tr>`;
         }
         if (data.twitterShow && data.twitter) {
-            socialLinks += `<tr><td style="padding:2px 0;">${icons.twitter}<a href="https://x.com/${data.twitter.replace('@','')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">@${data.twitter.replace('@','')}</a></td></tr>`;
+            const handle = esc(raw.twitter.replace('@',''));
+            socialLinks += `<tr><td style="padding:2px 0;">${icons.twitter}<a href="https://x.com/${handle}" style="font-size:12px;color:${linkColor};text-decoration:none;">@${handle}</a></td></tr>`;
         }
         if (data.whatsappShow && data.whatsapp) {
-            socialLinks += `<tr><td style="padding:2px 0;">${icons.whatsapp}<a href="https://wa.me/${data.whatsapp.replace(/[\s+\-]/g,'')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">${formatPhone(data.whatsapp)}</a></td></tr>`;
+            socialLinks += `<tr><td style="padding:2px 0;">${icons.whatsapp}<a href="https://wa.me/${cleanTel(raw.whatsapp).replace('+','')}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(formatPhone(raw.whatsapp))}</a></td></tr>`;
         }
         if (data.zaloShow && data.zalo) {
-            socialLinks += `<tr><td style="padding:2px 0;">${icons.zalo}<a href="https://zalo.me/${data.zalo.replace(/[\s+\-]/g,'')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">${formatPhone(data.zalo)}</a></td></tr>`;
+            socialLinks += `<tr><td style="padding:2px 0;">${icons.zalo}<a href="https://zalo.me/${cleanTel(raw.zalo).replace('+','')}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(formatPhone(raw.zalo))}</a></td></tr>`;
         }
 
-        // Gradient bar
+        // Gradient bar — C2 Fix: use headerColor variables
         const gradientBar = data.showGradient
-            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td bgcolor="#4A8BBE" style="height:3px;background:linear-gradient(90deg,#1B3A6B 0%,#4A8BBE 50%,#1B3A6B 100%);background-color:#4A8BBE;font-size:1px;line-height:1px;">&nbsp;</td></tr></table>`
+            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td bgcolor="${headerLight}" style="height:3px;background:linear-gradient(90deg,${headerColor} 0%,${headerLight} 50%,${headerColor} 100%);background-color:${headerLight};font-size:1px;line-height:1px;">&nbsp;</td></tr></table>`
             : '';
 
-        return `<table cellpadding="0" cellspacing="0" border="0" style="font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:660px;width:100%;">
+        // M1 Fix: Use width="660" attribute for Outlook instead of just max-width
+        const websiteClean = cleanUrl(raw.website);
+
+        return `<table cellpadding="0" cellspacing="0" border="0" width="660" style="font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:660px;width:100%;">
   <tr><td style="padding:0;">
 
-    <!-- Header -->
-    ${logoSection ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#1B3A6B" style="background:linear-gradient(135deg, #1B3A6B 0%, #4A8BBE 100%);background-color:#1B3A6B;">
-      <tr><td bgcolor="#1B3A6B" style="padding:14px 20px;background:linear-gradient(135deg, #1B3A6B 0%, #4A8BBE 100%);background-color:#1B3A6B;">${logoSection}</td></tr>
+    <!-- Header — C2 Fix: uses headerColor variable + gradient with bgcolor fallback -->
+    ${logoSection ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="${headerColor}" style="background:linear-gradient(135deg, ${headerColor} 0%, ${headerLight} 100%);background-color:${headerColor};">
+      <tr><td bgcolor="${headerColor}" style="padding:14px 20px;background:linear-gradient(135deg, ${headerColor} 0%, ${headerLight} 100%);background-color:${headerColor};">${logoSection}</td></tr>
     </table>` : ''}
 
     <!-- Gradient Bar -->
     ${gradientBar}
 
     <!-- Content -->
-    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;">
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#ffffff" style="background-color:#ffffff;">
       <tr><td style="padding:16px 20px;">
         <table cellpadding="0" cellspacing="0" border="0" width="100%">
           <tr>
             <!-- Left: Personal -->
             <td style="vertical-align:top;width:46%;padding-right:14px;">
               <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Contact</div>
-              <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:1px;">${data.fullName}${data.nickname ? ` <span style="font-weight:400;color:#64748b;">(${data.nickname})</span>` : ''}</div>
+              <div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:1px;">${data.fullName}${data.nickname ? ` <span style="font-weight:400;color:#64748b;">(${data.nickname})</span>` : ''}</div>
               <div style="font-size:11px;color:${brandColor};font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:10px;">${data.jobTitle}</div>
               <table cellpadding="0" cellspacing="0" border="0">
-                <tr><td style="padding:2px 0;">${icons.email}<a href="mailto:${data.email}" style="font-size:12px;color:#2563eb;text-decoration:none;">${data.email}</a></td></tr>
-                <tr><td style="padding:2px 0;">${icons.phone}<a href="tel:${data.mobile.replace(/\s/g,'')}" style="font-size:12px;color:#334155;text-decoration:none;">${formatPhone(data.mobile)}</a></td></tr>
+                <tr><td style="padding:2px 0;">${icons.email}<a href="mailto:${data.email}" style="font-size:12px;color:${linkColor};text-decoration:none;">${data.email}</a></td></tr>
+                <tr><td style="padding:2px 0;">${icons.phone}<a href="tel:${cleanTel(raw.mobile)}" style="font-size:12px;color:#334155;text-decoration:none;">${esc(formatPhone(raw.mobile))}</a></td></tr>
                 ${socialLinks}
               </table>
             </td>
@@ -802,13 +842,13 @@
             <!-- Right: Office -->
             <td style="vertical-align:top;width:54%;padding-left:14px;">
               <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Office</div>
-              <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:1px;">${data.companyName}</div>
+              <div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:1px;">${data.companyName}</div>
               <div style="font-size:11px;color:#475569;line-height:1.4;margin-bottom:10px;">${data.address}</div>
               <table cellpadding="0" cellspacing="0" border="0">
-                <tr><td style="padding:2px 0;">${icons.office}<a href="tel:${data.officePhone.replace(/\s/g,'')}" style="font-size:12px;color:#334155;text-decoration:none;">${formatPhone(data.officePhone)}</a></td></tr>
-                <tr><td style="padding:2px 0;">${icons.globe}<a href="https://${data.website.replace('https://','')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">${data.website}</a></td></tr>
-                ${data.facebookShow && data.facebook ? `<tr><td style="padding:2px 0;">${icons.facebook}<a href="https://${data.facebook.replace('https://','')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">${data.facebook.replace('https://','').replace('www.facebook.com/','').replace('facebook.com/','')}</a></td></tr>` : ''}
-                ${data.youtubeShow && data.youtube ? `<tr><td style="padding:2px 0;">${icons.youtube}<a href="https://${data.youtube.replace('https://','')}" target="_blank" style="font-size:12px;color:#2563eb;text-decoration:none;">${data.youtube.replace('https://','').replace('www.youtube.com/','').replace('youtube.com/','')}</a></td></tr>` : ''}
+                <tr><td style="padding:2px 0;">${icons.office}<a href="tel:${cleanTel(raw.officePhone)}" style="font-size:12px;color:#334155;text-decoration:none;">${esc(formatPhone(raw.officePhone))}</a></td></tr>
+                <tr><td style="padding:2px 0;">${icons.globe}<a href="https://${esc(websiteClean)}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(raw.website)}</a></td></tr>
+                ${data.facebookShow && data.facebook ? `<tr><td style="padding:2px 0;">${icons.facebook}<a href="https://${esc(cleanUrl(raw.facebook))}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(cleanUrl(raw.facebook).replace('www.facebook.com/','').replace('facebook.com/',''))}</a></td></tr>` : ''}
+                ${data.youtubeShow && data.youtube ? `<tr><td style="padding:2px 0;">${icons.youtube}<a href="https://${esc(cleanUrl(raw.youtube))}" style="font-size:12px;color:${linkColor};text-decoration:none;">${esc(cleanUrl(raw.youtube).replace('www.youtube.com/','').replace('youtube.com/',''))}</a></td></tr>` : ''}
               </table>
             </td>
           </tr>
@@ -817,7 +857,7 @@
     </table>
 
     <!-- Bottom Tagline -->
-    ${data.bottomTagline ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f8fafc;border-top:1px solid #e2e8f0;">
+    ${data.bottomTagline ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#f8fafc" style="background-color:#f8fafc;border-top:1px solid #e2e8f0;">
       <tr><td style="padding:8px 20px;text-align:center;">
         <span style="font-size:11px;color:#94a3b8;letter-spacing:0.3px;">${data.bottomTagline}</span>
       </td></tr>
@@ -832,9 +872,7 @@
     }
 
     function copySignature() {
-        const html = generateSignature();
-
-        // Method 1: Use execCommand with selection (most reliable for email clients)
+        // Use execCommand with selection (most reliable for email clients)
         const container = document.getElementById('signaturePreview');
         const range = document.createRange();
         range.selectNodeContents(container);
@@ -845,20 +883,25 @@
         try {
             document.execCommand('copy');
             selection.removeAllRanges();
-            const status = document.getElementById('copyStatus');
-            status.style.display = 'block';
-            setTimeout(() => status.style.display = 'none', 3000);
+            showCopyStatus();
         } catch (err) {
-            // Fallback: Copy HTML only (not plain text)
-            const blob = new Blob([html], { type: 'text/html' });
-            navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]).then(() => {
-                const status = document.getElementById('copyStatus');
-                status.style.display = 'block';
-                setTimeout(() => status.style.display = 'none', 3000);
-            }).catch(() => {
+            // Fallback: Clipboard API with both text/html and text/plain
+            const html = generateSignature();
+            const htmlBlob = new Blob([html], { type: 'text/html' });
+            const textBlob = new Blob([container.innerText], { type: 'text/plain' });
+            navigator.clipboard.write([new ClipboardItem({
+                'text/html': htmlBlob,
+                'text/plain': textBlob
+            })]).then(showCopyStatus).catch(() => {
                 alert('Copy failed. Please select the signature manually and copy.');
             });
         }
+    }
+
+    function showCopyStatus() {
+        const status = document.getElementById('copyStatus');
+        status.style.display = 'block';
+        setTimeout(() => status.style.display = 'none', 3000);
     }
 
     function downloadHTML() {
