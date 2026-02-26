@@ -470,9 +470,9 @@
                 <div class="social-icon">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/18px-Icon_of_Zalo.svg.png" alt="Zalo" width="18" height="18" style="border-radius:3px;">
                 </div>
-                <input type="text" id="zalo" value="+84933880288" placeholder="Zalo phone number" oninput="updatePreview()">
+                <input type="text" id="zalo" value="" placeholder="Zalo phone number" oninput="updatePreview()">
                 <label class="toggle">
-                    <input type="checkbox" id="zaloShow" checked onchange="updatePreview()">
+                    <input type="checkbox" id="zaloShow" onchange="updatePreview()">
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -486,9 +486,9 @@
                 <div class="social-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 </div>
-                <input type="text" id="facebook" value="www.facebook.com/GOODDAYCafeViet" placeholder="Facebook page URL" oninput="updatePreview()">
+                <input type="text" id="facebook" value="" placeholder="Facebook page URL" oninput="updatePreview()">
                 <label class="toggle">
-                    <input type="checkbox" id="facebookShow" checked onchange="updatePreview()">
+                    <input type="checkbox" id="facebookShow" onchange="updatePreview()">
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -497,9 +497,9 @@
                 <div class="social-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                 </div>
-                <input type="text" id="youtube" value="www.youtube.com/@vihaoco" placeholder="YouTube channel URL" oninput="updatePreview()">
+                <input type="text" id="youtube" value="" placeholder="YouTube channel URL" oninput="updatePreview()">
                 <label class="toggle">
-                    <input type="checkbox" id="youtubeShow" checked onchange="updatePreview()">
+                    <input type="checkbox" id="youtubeShow" onchange="updatePreview()">
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -511,7 +511,7 @@
             <div class="form-row full">
                 <div class="form-group">
                     <label>Header Text (leave empty to hide)</label>
-                    <input type="text" id="headerText" value="GOC VIET" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
+                    <input type="text" id="headerText" value="Goc Viet" placeholder="e.g. COMPANY NAME or leave empty" oninput="updatePreview()">
                 </div>
             </div>
             <div class="form-row full">
@@ -520,12 +520,18 @@
                     <input type="text" id="tagline" value="Specialized in supplying the whole range of world popular sauces and food products" oninput="updatePreview()">
                 </div>
             </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Slogan</label>
+                    <input type="text" id="slogan" value="Our commitments your benefits" oninput="updatePreview()">
+                </div>
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Header Color</label>
                     <div class="color-picker-row">
-                        <div class="color-swatch active" style="background: #0a1628;" data-color="#0a1628" onclick="setHeaderColor(this)"></div>
-                        <div class="color-swatch" style="background: #1e3a5f;" data-color="#1e3a5f" onclick="setHeaderColor(this)"></div>
+                        <div class="color-swatch active" style="background: #1B3A6B;" data-color="#1B3A6B" onclick="setHeaderColor(this)"></div>
+                        <div class="color-swatch" style="background: #4A8BBE;" data-color="#4A8BBE" onclick="setHeaderColor(this)"></div>
                         <div class="color-swatch" style="background: #1a1a1a;" data-color="#1a1a1a" onclick="setHeaderColor(this)"></div>
                         <div class="color-swatch" style="background: #064e3b;" data-color="#064e3b" onclick="setHeaderColor(this)"></div>
                     </div>
@@ -593,7 +599,7 @@
 
 <script>
     let logoDataURL = null;
-    let headerColor = '#0a1628';
+    let headerColor = '#1B3A6B';
     let brandColor = '#c41c3b';
 
     const labelStyle = "color:#94a3b8;font-size:11px;font-weight:600;font-family:'Segoe UI',Arial,sans-serif;margin-right:5px;";
@@ -694,6 +700,7 @@
             zaloShow: document.getElementById('zaloShow').checked,
             showGradient: document.getElementById('showGradient').checked,
             headerText: document.getElementById('headerText').value,
+            slogan: document.getElementById('slogan').value,
             iconStyle: document.getElementById('iconStyle').value,
             bottomTagline: document.getElementById('bottomTagline').value
         };
@@ -705,7 +712,7 @@
         let logoSection = '';
 
         if (logoDataURL && data.headerText) {
-            // Logo + Text + Tagline
+            // Logo + Text + Tagline + Slogan
             logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
                 <td style="padding-right:16px;vertical-align:middle;">
                   <img src="${logoDataURL}" alt="${data.companyName}" style="height:50px;width:auto;display:block;">
@@ -713,6 +720,7 @@
                 <td style="vertical-align:middle;">
                   <div style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:1px;">${data.headerText}</div>
                   ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">${data.tagline}</div>` : ''}
+                  ${data.slogan ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;font-style:italic;">${data.slogan}</div>` : ''}
                 </td>
               </tr></table>`;
         } else if (logoDataURL) {
@@ -726,16 +734,12 @@
                 </td>
               </tr></table>`;
         } else if (data.headerText) {
-            // Text only (with letter icon) + Tagline
+            // Text only + Tagline + Slogan
             logoSection = `<table cellpadding="0" cellspacing="0" border="0"><tr>
-                <td style="padding-right:14px;vertical-align:middle;">
-                  <div style="width:44px;height:44px;border:2px solid rgba(255,255,255,0.3);border-radius:8px;text-align:center;line-height:40px;">
-                    <span style="font-size:22px;font-weight:800;color:#ffffff;">${data.headerText.charAt(0)}</span>
-                  </div>
-                </td>
                 <td style="vertical-align:middle;">
                   <div style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:1px;">${data.headerText}</div>
                   ${data.tagline ? `<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">${data.tagline}</div>` : ''}
+                  ${data.slogan ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;font-style:italic;">${data.slogan}</div>` : ''}
                 </td>
               </tr></table>`;
         } else {
@@ -761,15 +765,15 @@
 
         // Gradient bar
         const gradientBar = data.showGradient
-            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="height:3px;background:linear-gradient(90deg,#0066cc 0%,#6366f1 25%,#a855f7 50%,#ec4899 75%,#f97316 100%);"></td></tr></table>`
+            ? `<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td bgcolor="#4A8BBE" style="height:3px;background:linear-gradient(90deg,#1B3A6B 0%,#4A8BBE 50%,#1B3A6B 100%);background-color:#4A8BBE;font-size:1px;line-height:1px;">&nbsp;</td></tr></table>`
             : '';
 
         return `<table cellpadding="0" cellspacing="0" border="0" style="font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:660px;width:100%;">
   <tr><td style="padding:0;">
 
     <!-- Header -->
-    ${logoSection ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${headerColor};">
-      <tr><td style="padding:14px 20px;">${logoSection}</td></tr>
+    ${logoSection ? `<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#1B3A6B" style="background:linear-gradient(135deg, #1B3A6B 0%, #4A8BBE 100%);background-color:#1B3A6B;">
+      <tr><td bgcolor="#1B3A6B" style="padding:14px 20px;background:linear-gradient(135deg, #1B3A6B 0%, #4A8BBE 100%);background-color:#1B3A6B;">${logoSection}</td></tr>
     </table>` : ''}
 
     <!-- Gradient Bar -->
